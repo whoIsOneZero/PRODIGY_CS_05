@@ -16,9 +16,12 @@ Before running the program, install the required dependencies:
 pip install -r requirements.txt
 ```
 
+- If you want to use this tool on Windows using Scapy, you'll need to install a packet capture libraries installed.
+    * Install Npcap from here: https://npcap.com/
+
 * To run the program:
 ```sh
-python sniffer.py
+python sniffer.py <interface>
 ```
 
 ## Note

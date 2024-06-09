@@ -3,14 +3,14 @@ from scapy.all import *
 
 def handle_packet(packet, log):
     """
-    Processes a packet and logs TCP connection details to the specified log file.
+    Processes a packet and logs relevant information to the specified log file.
 
     Args:
         packet: The packet to process.
         log: The file object where log entries will be written.
 
-    Checks if the packet contains a TCP layer. If it does, extracts the source
-    and destination IP addresses and ports, and writes this information to the log file.
+    Extracts relevant information from the packet such as source and destination IP addresses,
+    protocols, and payload data, and writes this information to the log file.
     """
     # Check if the packet contains TCP layer
     if packet.haslayer(TCP):
@@ -21,8 +21,32 @@ def handle_packet(packet, log):
         src_port = packet[TCP].sport
         dst_port = packet[TCP].dport
 
+        protocol = "TCP"
+
+        # Extract payload data
+        # payload = packet[Raw].load if Raw in packet else None
+        payload = extract_payload(packet)
+
         # Write packet info to log file
-        log.write(f"TCP Connection: {src_ip}:{src_port} -> {dst_ip}:{dst_port}\n")
+        log.write(f"{protocol} Connection: {src_ip}:{src_port} -> {dst_ip}:{dst_port} Protocol: {protocol}, Payload: {payload}\n")
+
+def extract_payload(packet):
+    """
+    Extracts the payload data from the packet and returns it in a readable format.
+
+    Args:
+        packet: The packet containing the payload data.
+
+    Returns:
+        str: The payload data in a readable format.
+    """
+    if Raw in packet:
+        # Check if payload is HTTP
+        if packet[TCP].dport == 80 or packet[TCP].sport == 80:
+            return str(packet[TCP].payload)
+        else:
+            # return raw payload
+            return packet[Raw].load
 
 def main(interface):
     """
